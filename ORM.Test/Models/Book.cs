@@ -1,7 +1,9 @@
-﻿using System;
+﻿using ORM.Sql.Attributes;
+using System;
 
 namespace ORM.Tests.Models
 {
+	//[Table(Name = "BlaBla")]
 	public class Book
 	{
 		public string Name { get; set; }

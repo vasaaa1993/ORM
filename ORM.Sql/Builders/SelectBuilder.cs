@@ -1,6 +1,5 @@
-﻿using System;
-using System.Data.Entity.Design.PluralizationServices;
-using System.Globalization;
+﻿using ORM.Sql.Helpers;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,18 +10,20 @@ namespace ORM.Sql.Builders
     {
         public override string Build(Expression ex)
         {
-            if (!(ex is LambdaExpression))
+			if (ex == null)
+				return DefaultQuery();
+
+			if (!(ex is LambdaExpression))
             {
                 throw new NotSupportedException($"Expression type: {ex.GetType().Name} is unsupported.");
             }
 
-            if (ex == null)
-                return DefaultQuery();
+			var lambdaEx = ex as LambdaExpression;
 
-            var result = "Select" + Recurse((ex as LambdaExpression).Body) 
-                + PluralizationService.CreateService(new CultureInfo("en-US")).Pluralize((ex as LambdaExpression).Parameters[0].Name);
+			var result = "Select " + Recurse((ex as LambdaExpression).Body) 
+                + $"From {GetTableName(lambdaEx)}";
 
-            return result;
+			return result;
         }
 
         public string Recurse(Expression expression)
@@ -34,7 +35,7 @@ namespace ORM.Sql.Builders
                 var count = newEx.Arguments.Count;
                 for (int i = 0; i < count; i++)
                 {
-                    str += $" {Recurse(newEx.Arguments[i])} AS {newEx.Members[i].Name}{(i != count - 1 ? "," : "")} ";
+                    str += $"{Recurse(newEx.Arguments[i])} AS {newEx.Members[i].Name}{(i != count - 1 ? "," : "")} ";
                 }
                 return str;
             }
@@ -84,6 +85,16 @@ namespace ORM.Sql.Builders
             return "Select * From";
         }
 
-       // public string NodeTypeToString(ExpressionType nodeType, )
+		public string GetTableName(LambdaExpression ex)
+		{
+			var paramEx = ex.Parameters.First() as ParameterExpression;
+
+			if(paramEx == null)
+			{
+				throw new NotImplementedException($"Not supported type of parameter - {paramEx.Type.Name}");
+			}
+			
+			return DbHelper.GetTableName(paramEx.Type); ;
+		}
     }
 }

@@ -43,9 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\TableAttribute.cs" />
     <Compile Include="Builders\BuilderBase.cs" />
     <Compile Include="Builders\SelectBuilder.cs" />
     <Compile Include="Builders\WhereBuilder.cs" />
+    <Compile Include="Helpers\DbHelper.cs" />
     <Compile Include="Operators\OrderBy.cs" />
     <Compile Include="Operators\Select.cs" />
     <Compile Include="Operators\Where.cs" />
