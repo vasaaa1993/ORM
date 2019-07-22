@@ -1,9 +1,12 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 
-namespace ORM
+namespace ORM.Interfaces
 {
 	public interface IQueryProvider
 	{
-		string Build();
+        void AddExpression(object operation, Expression ex, Type operandType);
+
+        string Build();
 	}
 }

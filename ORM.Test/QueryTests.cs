@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
-using ORM.Implementations.Operators;
+using ORM.Sql;
+using ORM.Sql.Operators;
 using ORM.Tests.Models;
 
 namespace ORM.Tests
@@ -11,7 +12,7 @@ namespace ORM.Tests
 		public void Test()
 		{
 			Query<Book> books = new Query<Book>(new SqlQueryProvider());
-			var abc = books.Select(i => new { Name = i.Name, Author = i.Author });
+			var abc = books.Where(i => i.Name.Length > 5).Select(i => new { i.Name, i.Author });
 			Assert.AreEqual(true, false);
 		}
 	}

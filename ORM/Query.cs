@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ORM.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ORM
+namespace ORM.Sql
 {
 	public class Query<T> : IQuery<T>
 	{
@@ -18,7 +19,7 @@ namespace ORM
 			throw new NotImplementedException();
 		}
 
-		IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
 		{
 			throw new NotImplementedException();
 		}
