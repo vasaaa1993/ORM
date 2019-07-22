@@ -8,7 +8,7 @@ namespace ORM.Sql.Operators
 	{
 		public static IQuery<TSource> OrderBy<TSource>(this IQuery<TSource> source, Expression<Func<TSource, bool>> predicate)
 		{
-            ource.Provider.AddExpression(SqlOperator.Select, predicate, typeof(TSource));
+            source.Provider.AddExpression(SqlOperator.Select, predicate, typeof(TSource));
             return source;
 		}
 	}

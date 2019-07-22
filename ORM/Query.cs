@@ -16,8 +16,9 @@ namespace ORM.Sql
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			throw new NotImplementedException();
-		}
+            var str = Provider.Build();
+            return new List<T>().GetEnumerator();
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
 		{

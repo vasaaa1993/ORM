@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builders\BuilderBase.cs" />
+    <Compile Include="Builders\SelectBuilder.cs" />
+    <Compile Include="Builders\WhereBuilder.cs" />
     <Compile Include="Operators\OrderBy.cs" />
     <Compile Include="Operators\Select.cs" />
     <Compile Include="Operators\Where.cs" />

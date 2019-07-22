@@ -2,6 +2,7 @@
 using ORM.Sql;
 using ORM.Sql.Operators;
 using ORM.Tests.Models;
+using System.Linq;
 
 namespace ORM.Tests
 {
@@ -11,8 +12,8 @@ namespace ORM.Tests
 		[Test]
 		public void Test()
 		{
-			Query<Book> books = new Query<Book>(new SqlQueryProvider());
-			var abc = books.Where(i => i.Name.Length > 5).Select(i => new { i.Name, i.Author });
+			Query<Book> books = new Query<Book>(new SqlQueryProvider(""));
+			var abc = books.Where(i => i.Name.Count() > 5).Select(i => new { BookName = i.Name, Writer = i.Author, Count = i.Name.Count(), SomeInt = 55 }).GetEnumerator();
 			Assert.AreEqual(true, false);
 		}
 	}
