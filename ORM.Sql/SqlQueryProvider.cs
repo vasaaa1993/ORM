@@ -1,7 +1,6 @@
-﻿using ORM.Sql.Builders;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data.SqlClient;
 using System.Linq.Expressions;
 using IQueryProvider = ORM.Interfaces.IQueryProvider;
 
@@ -14,8 +13,8 @@ namespace ORM.Sql
 
         public SqlQueryProvider(string connectionString)
         {
-            _connectionString = connectionString;
             _operators.Add(new QueryItem(SqlOperator.None, null, typeof(T)));
+            _connectionString = connectionString;
         }
 
         public void AddExpression(object operation, Expression ex, Type operand)
@@ -28,9 +27,22 @@ namespace ORM.Sql
             _operators.Add(new QueryItem(sqlOp, ex, operand));
         }
 
-        public string Build()
-		{
-            return new SqlQueryBuilder().BuildQuery(_operators);
+        public IEnumerable<TResult> Execute<TResult>()
+        {
+            var sql = new SqlQueryBuilder().BuildQuery(_operators);
+
+            IEnumerable<TResult> result;
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sql, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
+                result = SqlResultMapper.Map<TResult>(reader);
+
+                reader.Close();
+            }   
+            return result;
         }
-	}
+    }
 }

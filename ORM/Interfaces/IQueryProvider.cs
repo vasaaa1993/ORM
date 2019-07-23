@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace ORM.Interfaces
@@ -7,6 +8,6 @@ namespace ORM.Interfaces
 	{
         void AddExpression(object operation, Expression ex, Type operandType);
 
-        string Build();
-	}
+        IEnumerable<TResult> Execute<TResult>();
+    }
 }

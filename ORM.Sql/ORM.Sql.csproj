@@ -51,6 +51,7 @@
     <Compile Include="Helpers\NamingHelper.cs" />
     <Compile Include="Helpers\OperationHelper.cs" />
     <Compile Include="Helpers\ValueHelper.cs" />
+    <Compile Include="ObjectMapper.cs" />
     <Compile Include="Operators\OrderBy.cs" />
     <Compile Include="Operators\Select.cs" />
     <Compile Include="Operators\Where.cs" />
