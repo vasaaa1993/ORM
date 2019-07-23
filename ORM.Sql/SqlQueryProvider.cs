@@ -7,7 +7,7 @@ using IQueryProvider = ORM.Interfaces.IQueryProvider;
 
 namespace ORM.Sql
 {
-    public class SqlQueryProvider : IQueryProvider
+    public class SqlQueryProvider<T> : IQueryProvider
 	{
         private readonly List<QueryItem> _operators = new List<QueryItem>();
         private readonly string _connectionString;
@@ -15,6 +15,7 @@ namespace ORM.Sql
         public SqlQueryProvider(string connectionString)
         {
             _connectionString = connectionString;
+            _operators.Add(new QueryItem(SqlOperator.None, null, typeof(T)));
         }
 
         public void AddExpression(object operation, Expression ex, Type operand)
@@ -27,15 +28,9 @@ namespace ORM.Sql
             _operators.Add(new QueryItem(sqlOp, ex, operand));
         }
 
-        //simple method
         public string Build()
 		{
-            var result = "";
-			if(_operators.FirstOrDefault(i => i.Operator == SqlOperator.Select) != null)
-            {
-                result += new SelectBuilder().Build(_operators.FirstOrDefault(i => i.Operator == SqlOperator.Select).Expression ?? null);
-            }
-            return result;
-		}
+            return new SqlQueryBuilder().BuildQuery(_operators);
+        }
 	}
 }

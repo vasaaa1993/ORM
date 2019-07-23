@@ -6,9 +6,9 @@ namespace ORM.Sql.Operators
 {
 	public static partial class QueryExtensions
 	{
-		public static IQuery<TSource> OrderBy<TSource>(this IQuery<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static IQuery<TSource> OrderBy<TSource, TKey>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
 		{
-            source.Provider.AddExpression(SqlOperator.Select, predicate, typeof(TSource));
+            source.Provider.AddExpression(SqlOperator.OrderBy, keySelector, typeof(TSource));
             return source;
 		}
 	}

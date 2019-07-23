@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ORM.Sql.Helpers
 {
-	static class DbHelper
+	static class NamingHelper
 	{
 		public static string GetTableName(Type modelType)
 		{

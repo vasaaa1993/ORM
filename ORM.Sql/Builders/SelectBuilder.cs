@@ -8,93 +8,92 @@ namespace ORM.Sql.Builders
 {
     class SelectBuilder: BuilderBase
     {
-        public override string Build(Expression ex)
+        public SelectBuilder()
         {
-			if (ex == null)
-				return DefaultQuery();
-
-			if (!(ex is LambdaExpression))
-            {
-                throw new NotSupportedException($"Expression type: {ex.GetType().Name} is unsupported.");
-            }
-
-			var lambdaEx = ex as LambdaExpression;
-
-			var result = "Select " + Recurse((ex as LambdaExpression).Body) 
-                + $"From {GetTableName(lambdaEx)}";
-
-			return result;
+            Operator = "SELECT";
         }
 
-        public string Recurse(Expression expression)
+        public override string Build(Expression ex, Type type = null)
         {
-            if (expression is NewExpression)
+            var result = $"{Operator} ";
+
+            if (ex == null)
+                result += "*";
+            else
             {
-                var newEx = expression as NewExpression;
-                var str = "";
-                var count = newEx.Arguments.Count;
-                for (int i = 0; i < count; i++)
+                if (!(ex is LambdaExpression))
                 {
-                    str += $"{Recurse(newEx.Arguments[i])} AS {newEx.Members[i].Name}{(i != count - 1 ? "," : "")} ";
+                    throw new NotSupportedException($"Expression type: {ex.GetType().Name} is unsupported.");
                 }
-                return str;
+
+                var lambdaEx = ex as LambdaExpression;
+
+                result += Recurse(lambdaEx.Body);
+
+                if (type == null)
+                    type = (lambdaEx.Parameters.First() as ParameterExpression)?.Type;
             }
 
-            if (expression is MemberExpression)
-            {
-                var member = expression as MemberExpression;
+            if (type == null)
+                throw new InvalidOperationException("Type cannot be null in the select statment");
 
-                if(member.Member is PropertyInfo)
-                {
-                    return member.Member.Name;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
+            result += $" From {NamingHelper.GetTableName(type)}";
 
-            if (expression is MethodCallExpression)
-            {
-                var methodCall = expression as MethodCallExpression;
-
-                if (methodCall.Method.DeclaringType == typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(m => m.Name == "Count").DeclaringType)
-                {
-                    var str = $"LEN({Recurse(methodCall.Arguments[0])})";
-                    return str;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-                
-            }
-
-            if (expression is ConstantExpression)
-            {
-                var constant = expression as ConstantExpression;
-                return constant.Value.ToString();
-            }
-
-            throw new NotImplementedException();
+            return result;
         }
 
-        public string DefaultQuery()
-        {
-            return "Select * From";
-        }
+        //protected override string Recurse(Expression expression)
+        //{
+        //    if (expression is NewExpression)
+        //    {
+        //        var newEx = expression as NewExpression;
+        //        var str = "";
+        //        var count = newEx.Arguments.Count;
+        //        for (int i = 0; i < count; i++)
+        //        {
+        //            str += $"{Recurse(newEx.Arguments[i])} AS {newEx.Members[i].Name}{(i != count - 1 ? "," : "")} ";
+        //        }
+        //        return str;
+        //    }
 
-		public string GetTableName(LambdaExpression ex)
-		{
-			var paramEx = ex.Parameters.First() as ParameterExpression;
+        //    if (expression is MemberExpression)
+        //    {
+        //        var member = expression as MemberExpression;
 
-			if(paramEx == null)
-			{
-				throw new NotImplementedException($"Not supported type of parameter - {paramEx.Type.Name}");
-			}
-			
-			return DbHelper.GetTableName(paramEx.Type); ;
-		}
+        //        if (member.Member is PropertyInfo)
+        //        {
+        //            return member.Member.Name;
+        //        }
+        //        else
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+        //    }
+
+        //    if (expression is MethodCallExpression)
+        //    {
+        //        var methodCall = expression as MethodCallExpression;
+
+        //        if (methodCall.Method.DeclaringType == typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
+        //    .First(m => m.Name == "Count").DeclaringType)
+        //        {
+        //            var str = $"LEN({Recurse(methodCall.Arguments[0])})";
+        //            return str;
+        //        }
+        //        else
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+
+        //    }
+
+        //    if (expression is ConstantExpression)
+        //    {
+        //        var constant = expression as ConstantExpression;
+        //        return constant.Value.ToString();
+        //    }
+
+        //    throw new NotImplementedException();
+        //}
     }
 }

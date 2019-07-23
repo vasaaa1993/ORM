@@ -12,8 +12,11 @@ namespace ORM.Tests
 		[Test]
 		public void Test()
 		{
-			Query<Book> books = new Query<Book>(new SqlQueryProvider(""));
-			var abc = books.Where(i => i.Name.Count() > 5).Select(i => new { BookName = i.Name, Writer = i.Author, Count = i.Name.Count(), SomeInt = 55 }).GetEnumerator();
+			Query<Book> books = new Query<Book>(new SqlQueryProvider<Book>(""));
+			var abc = books
+                .Where(i => !i.val)
+                .Select(i => new { BookName = i.Name, Writer = i.Author, Count = i.Name.Count(), SomeInt = 55 })
+                .OrderBy(i => i.BookName.Count()).GetEnumerator();
 			Assert.AreEqual(true, false);
 		}
 	}
