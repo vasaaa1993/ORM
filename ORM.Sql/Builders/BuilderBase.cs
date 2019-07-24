@@ -58,7 +58,8 @@ namespace ORM.Sql.Builders
 
                 if (member.Member is PropertyInfo)
                 {
-                    return member.Member.Name;
+                    var pr = member.Member as PropertyInfo;
+                    return MemberToString(pr.Name, pr.PropertyType);
                 }
                 else
                 {
@@ -91,6 +92,18 @@ namespace ORM.Sql.Builders
             }
 
             throw new NotImplementedException();
+        }
+
+        private string MemberToString(string name, Type type)
+        {
+            if(type == typeof(bool))
+            {
+                return $"{name} == 1";
+            }
+            else
+            {
+                return name;
+            }
         }
     }
 }
