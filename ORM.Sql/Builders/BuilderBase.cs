@@ -10,7 +10,7 @@ namespace ORM.Sql.Builders
     {
         protected string Operator { get; set; }
 
-        public virtual string Build(Expression ex, Type type = null)
+        public virtual string Build(string prev, Expression ex, Type type = null)
         {
             if (!(ex is LambdaExpression))
             {
@@ -19,7 +19,7 @@ namespace ORM.Sql.Builders
 
             var lambdaEx = ex as LambdaExpression;
 
-            var result = $"{Operator} " + Recurse((ex as LambdaExpression).Body);
+            var result = prev + $" {Operator} " + Recurse((ex as LambdaExpression).Body);
 
             return result;
         }
@@ -30,14 +30,14 @@ namespace ORM.Sql.Builders
             {
                 var binary = expression as BinaryExpression;
                 var right = Recurse(binary.Right);
-                return $" {Recurse(binary.Left)} {OperationHelper.NodeTypeToSqlOperation(binary.NodeType, right == "NULL")} {right}";
+                return $" {Recurse(binary.Left)} {NodeTypeToSqlOperation(binary.NodeType, right == "NULL")} {right}";
             }
 
             if (expression is UnaryExpression)
             {
                 var unary = expression as UnaryExpression;
                 var operand = Recurse(unary.Operand);
-                return $"{OperationHelper.NodeTypeToSqlOperation(unary.NodeType, operand == "NULL")} {operand}";
+                return $"{NodeTypeToSqlOperation(unary.NodeType, operand == "NULL")} {operand}";
             }
 
             if (expression is NewExpression)
@@ -59,7 +59,7 @@ namespace ORM.Sql.Builders
                 if (member.Member is PropertyInfo)
                 {
                     var pr = member.Member as PropertyInfo;
-                    return MemberToString(pr.Name, pr.PropertyType);
+                    return pr.Name;
                 }
                 else
                 {
@@ -88,22 +88,57 @@ namespace ORM.Sql.Builders
             {
                 var constant = expression as ConstantExpression;
 
-                return ValueHelper.ValueToString(constant.Value);
+                return ValueToString(constant.Value);
             }
 
             throw new NotImplementedException();
         }
 
-        private string MemberToString(string name, Type type)
+        public static string NodeTypeToSqlOperation(ExpressionType type, bool rightIsNull)
         {
-            if(type == typeof(bool))
+            switch (type)
             {
-                return $"{name} == 1";
+                case ExpressionType.Add:
+                    return "+";
+                case ExpressionType.Negate:
+                    return "-";
+                case ExpressionType.Multiply:
+                    return "*";
+                case ExpressionType.Divide:
+                    return "/";
+                case ExpressionType.Modulo:
+                    return "%";
+                case ExpressionType.And:
+                    return "&";
+                case ExpressionType.AndAlso:
+                    return "AND";
+                case ExpressionType.Equal:
+                    return rightIsNull ? "IS" : "=";
+                case ExpressionType.GreaterThan:
+                    return ">";
+                case ExpressionType.GreaterThanOrEqual:
+                    return ">=";
+                case ExpressionType.LessThan:
+                    return "<";
+                case ExpressionType.LessThanOrEqual:
+                    return "<=";
+                case ExpressionType.Not:
+                    return "NOT";
+                case ExpressionType.OrElse:
+                    return "OR";
+                case ExpressionType.NotEqual:
+                    return "<>";
             }
-            else
-            {
-                return name;
-            }
+            throw new NotImplementedException($"Expression type - {type} has not supported yet");
+        }
+
+        public static string ValueToString(object value)
+        {
+            if (value == null)
+                return "NULL";
+            else if (value is bool)
+                return (bool)value ? "1" : "0";
+            else return value.ToString();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using ORM.Sql.Helpers;
+using ORM.Sql.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Linq.Expressions;
 using IQueryProvider = ORM.Interfaces.IQueryProvider;
 
@@ -31,6 +34,8 @@ namespace ORM.Sql
         {
             var sql = new SqlQueryBuilder().BuildQuery(_operators);
 
+            IEnumerable<ParameterItem> parameters = ResultParameterOrderHelper.GetListOfResultParameters(_operators.FirstOrDefault(i => i.Operator == SqlOperator.Select));
+
             IEnumerable<TResult> result;
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -38,7 +43,7 @@ namespace ORM.Sql
                 SqlCommand command = new SqlCommand(sql, connection);
                 SqlDataReader reader = command.ExecuteReader();
 
-                result = SqlResultMapper.Map<TResult>(reader);
+                result = SqlResultMapper.Map<TResult>(reader, parameters);
 
                 reader.Close();
             }   

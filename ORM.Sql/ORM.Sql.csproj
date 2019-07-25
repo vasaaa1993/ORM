@@ -49,8 +49,8 @@
     <Compile Include="Builders\SelectBuilder.cs" />
     <Compile Include="Builders\WhereBuilder.cs" />
     <Compile Include="Helpers\NamingHelper.cs" />
-    <Compile Include="Helpers\OperationHelper.cs" />
-    <Compile Include="Helpers\ValueHelper.cs" />
+    <Compile Include="Helpers\ResultParameterOrderHelper.cs" />
+    <Compile Include="Models\ParameterItem.cs" />
     <Compile Include="ObjectMapper.cs" />
     <Compile Include="Operators\OrderBy.cs" />
     <Compile Include="Operators\Select.cs" />

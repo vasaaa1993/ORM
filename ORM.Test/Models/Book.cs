@@ -3,8 +3,8 @@ using System;
 
 namespace ORM.Tests.Models
 {
-	//[Table(Name = "BlaBla")]
-	public class Book
+    //[Table(Name = "BlaBla")]
+    public class Book
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
@@ -15,4 +15,6 @@ namespace ORM.Tests.Models
 		public string Language { get; set; }
 		public bool IsPublished { get; set; }
     }
+
+
 }

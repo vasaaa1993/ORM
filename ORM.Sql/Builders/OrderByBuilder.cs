@@ -11,57 +11,19 @@ namespace ORM.Sql.Builders
         {
             Operator = "ORDER BY";
         }
-        //public override string Build(Expression ex)
-        //{
-        //    if (ex == null)
-        //        return "";
 
-        //    if (!(ex is LambdaExpression))
-        //    {
-        //        throw new NotSupportedException($"Expression type: {ex.GetType().Name} is unsupported.");
-        //    }
+        public override string Build(string prev, Expression ex, Type type = null)
+        {
+            if (!(ex is LambdaExpression))
+            {
+                throw new NotSupportedException($"Expression type: {ex.GetType().Name} is unsupported.");
+            }
 
-        //    var lambdaEx = ex as LambdaExpression;
+            var lambdaEx = ex as LambdaExpression;
 
-        //    var result = "ORDER BY  " + Recurse((ex as LambdaExpression).Body);
+            var result = $"SELECT * FROM ({prev}) AS A{DateTime.UtcNow.Ticks.ToString()} {Operator} " + Recurse((ex as LambdaExpression).Body);
 
-        //    return result;
-        //}
-
-        //protected override string Recurse(Expression expression)
-        //{
-        //    if (expression is MemberExpression)
-        //    {
-        //        var member = expression as MemberExpression;
-
-        //        if (member.Member is PropertyInfo)
-        //        {
-        //            return member.Member.Name;
-        //        }
-        //        else
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-        //    }
-
-        //    if (expression is MethodCallExpression)
-        //    {
-        //        var methodCall = expression as MethodCallExpression;
-
-        //        if (methodCall.Method.DeclaringType == typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-        //    .First(m => m.Name == "Count").DeclaringType)
-        //        {
-        //            var str = $"LEN({Recurse(methodCall.Arguments[0])})";
-        //            return str;
-        //        }
-        //        else
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-
-        //    }
-
-        //    throw new NotImplementedException();
-        //}
+            return result;
+        }
     }
 }

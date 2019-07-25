@@ -15,26 +15,26 @@ namespace ORM.Sql
             SqlOperator.OrderBy
         };
 
-        public string  BuildQuery(List<QueryItem> operators)
+        public string BuildQuery(List<QueryItem> operators)
         {
-            var result = new StringBuilder();
-            foreach(var op in _sqlOperators)
+            var result = "";
+            foreach (var op in _sqlOperators)
             {
                 var item = GetItemByOperator(op, operators);
 
                 if (item == null)
                     continue;
 
-                result.Append(GetBuilderByOperator(op).Build(item.Expression, item.OperandType));
-                result.Append(" ");
+                result = GetBuilderByOperator(op).Build(result, item.Expression, item.OperandType);
+
             }
 
-            return result.ToString().Trim();
+            return result.Trim();
         }
 
         private void PrepareExpressopns(List<QueryItem> operators)
         {
-            if(GetItemByOperator(SqlOperator.Select, operators) == null)
+            if (GetItemByOperator(SqlOperator.Select, operators) == null)
             {
                 operators.Add(new QueryItem(SqlOperator.Select, null, GetItemByOperator(SqlOperator.None, operators).OperandType));
             }
@@ -47,7 +47,7 @@ namespace ORM.Sql
 
         private BuilderBase GetBuilderByOperator(SqlOperator op)
         {
-            switch(op)
+            switch (op)
             {
                 case SqlOperator.Select:
                     return new SelectBuilder();
